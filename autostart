@@ -22,6 +22,6 @@ sudo su - chat -c 'echo "ExecStart=-/sbin/agetty --autologin chat --noclear %I \
 # AutoGPT starten nach dem Systemstart
 autogpt_path=$(which autogpt.py)
 sudo su - chat -c "echo 'source /path/to/autogpt/autogpt-env/bin/activate' >> ~/.bashrc"
-sudo su - chat -c "echo 'python $autogpt_path --input_text \"I want to generate text based on this prompt.\"" >> ~/.bashrc'
+sudo su - chat -c "echo 'python $autogpt_path --input_text \"I want to generate text based on this prompt.\"' >> ~/.bashrc"
 
 echo "Die Konfiguration für den Benutzer 'chat' und den Auto-Start wurde abgeschlossen."
