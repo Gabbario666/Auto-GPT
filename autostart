@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Prüfen, ob das Paket 'zip' installiert ist, andernfalls installieren
+if ! command -v zip &> /dev/null; then
+    echo "'zip' Paket nicht gefunden. Es wird nun installiert..."
+    sudo apt-get update
+    sudo apt-get install -y zip
+fi
+
+# Benutzer "chat" erstellen
+sudo useradd -m chat
+
+# Passwort für den Benutzer "chat" festlegen
+echo "chat:chat" | sudo chpasswd
+
+# Automatische Anmeldung für den Benutzer "chat" einrichten
+sudo su - chat -c 'echo "chat:chat" | sudo chpasswd'
+sudo su - chat -c 'echo "[Service]" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/autologin.conf'
+sudo su - chat -c 'echo "ExecStart=" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/autologin.conf'
+sudo su - chat -c 'echo "ExecStart=-/sbin/agetty --autologin chat --noclear %I \$TERM" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/autologin.conf'
+
+# AutoGPT starten nach dem Systemstart
+autogpt_path=$(which autogpt.py)
+sudo su - chat -c "echo 'source /path/to/autogpt/autogpt-env/bin/activate' >> ~/.bashrc"
+sudo su - chat -c "echo 'python $autogpt_path --input_text \"I want to generate text based on this prompt.\"" >> ~/.bashrc'
+
+echo "Die Konfiguration für den Benutzer 'chat' und den Auto-Start wurde abgeschlossen."
