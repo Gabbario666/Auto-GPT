@@ -11,19 +11,16 @@ fi
 sudo useradd -m chat
 
 # Passwort für den Benutzer "chat" festlegen
-echo "chat:chat" | sudo chpasswd
+sudo su - chat -c 'echo "chat:chat" | sudo chpasswd'
 
 # Automatische Anmeldung für den Benutzer "chat" einrichten
-sudo su - chat -c 'echo "chat:chat" | sudo chpasswd'
-sudo su - chat -c 'echo "[Service]" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/autologin.conf'
-sudo su - chat -c 'echo "ExecStart=" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/autologin.conf'
-sudo su - chat -c 'echo "ExecStart=-/sbin/agetty --autologin chat --noclear %I \$TERM" | sudo tee -a /etc/systemd/system/getty@tty1.service.d/autologin.conf'
+sudo su - chat -c 'echo "chat:chat" | sudo tee /etc/init/tty1.conf'
 
 # AutoGPT starten nach dem Systemstart
 autogpt_path=$(which autogpt.py)
 echo 'if [ -f "$HOME/.bashrc" ]; then' | sudo tee -a /home/chat/.bashrc
 echo '    source /path/to/autogpt/autogpt-env/bin/activate' | sudo tee -a /home/chat/.bashrc
-echo '    python $autogpt_path --input_text "I want to generate text based on this prompt."' | sudo tee -a /home/chat/.bashrc
+echo "    python $autogpt_path --input_text 'I want to generate text based on this prompt.'" | sudo tee -a /home/chat/.bashrc
 echo 'fi' | sudo tee -a /home/chat/.bashrc
 
 echo "Die Konfiguration für den Benutzer 'chat' und den Auto-Start wurde abgeschlossen."
