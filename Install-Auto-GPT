@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# Pfad zur AutoGPT-Installation anpassen
+autogpt_path="/path/to/autogpt"
+
+# Aktualisieren des Systems
+sudo apt update
+sudo apt upgrade -y
+
+# Installieren der erforderlichen Pakete
+sudo apt install -y python3-pip python3-dev python3-venv libffi-dev libssl-dev libopenblas-dev libblas-dev m4 cmake cython python3-yaml python3-scipy libatlas-base-dev gfortran python3-dev
+
+# Erstellen und Aktivieren der virtuellen Python-Umgebung
+python3 -m venv $autogpt_path/autogpt-env
+source $autogpt_path/autogpt-env/bin/activate
+
+# Installieren von TensorFlow
+pip install tensorflow
+
+# Installieren weiterer erforderlicher Python-Pakete
+pip install transformers torch
+
+# Erstellen des Autostart-Service
+cat > /etc/systemd/system/autogpt.service <<EOF
+[Unit]
+Description=AutoGPT Service
+After=network.target
+
+[Service]
+User=$USER
+Group=$USER
+WorkingDirectory=$autogpt_path
+ExecStart=$autogpt_path/autogpt-env/bin/python $autogpt_path/autogpt.py
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Aktualisieren des Autostart-Service
+sudo systemctl daemon-reload
+
+# Aktivieren des Autostart-Service
+sudo systemctl enable autogpt.service
+
+echo "Die Installation von AutoGPT ist abgeschlossen und der Autostart-Service wurde eingerichtet."
