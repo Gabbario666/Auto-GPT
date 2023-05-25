@@ -11,7 +11,7 @@ fi
 sudo useradd -m chat
 
 # Passwort für den Benutzer "chat" festlegen
-sudo passwd -S chat | grep "chat" | grep -v "L" | grep -v "NP" | awk '{print "chat:" $2}' | sudo chpasswd -e
+echo "chat:chat" | sudo chpasswd
 
 # Automatische Anmeldung für den Benutzer "chat" einrichten
 sudo su - chat -c 'echo "chat:chat" | sudo tee /etc/init/tty1.conf'
